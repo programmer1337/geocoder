@@ -38,7 +38,7 @@ public class Test {
         this.mark = mark;
     }
 
-    public boolean isDone() {
+    public boolean getDone() {
         return done;
     }
 
