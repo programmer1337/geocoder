@@ -1,9 +1,12 @@
 package com.dmnine.geocoder.controller;
 
 import com.dmnine.geocoder.dto.RestApiError;
+import com.dmnine.geocoder.model.Mark;
+import com.dmnine.geocoder.repository.TestRepository;
 import com.dmnine.geocoder.util.TestUtil;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -23,6 +26,8 @@ class TestControllerTest {
 
   @LocalServerPort
   Integer port;
+  @Autowired
+  TestRepository testRepository;
 
   private final TestRestTemplate testRestTemplate = new TestRestTemplate();
 
@@ -60,7 +65,6 @@ class TestControllerTest {
     assertEquals("test", body.getName());
     assertEquals(false, body.getDone());
     assertEquals(null, body.getMark());
-
   }
 
   @Test
@@ -100,5 +104,85 @@ class TestControllerTest {
     assertEquals("/tests/abc", body.getPath());
 
     System.out.println(body);
+  }
+
+  @Test
+  void integrationTestForSavePositive(){
+    ResponseEntity<com.dmnine.geocoder.model.Test> response = testRestTemplate.
+      getForEntity("http://localhost:"+port+"/tests/save?name=test",
+        com.dmnine.geocoder.model.Test.class);
+
+    final com.dmnine.geocoder.model.Test body = response.getBody();
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNull(body);
+  }
+
+  @Test
+  void integrationTestForSaveVoid(){
+    ResponseEntity<Void> response = testRestTemplate.
+      getForEntity("http://localhost:"+port+"/tests/save?name=test",
+        Void.class);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void integrationTestForSaveWithoutName() {
+    ResponseEntity<com.dmnine.geocoder.model.Test> response = testRestTemplate.
+      getForEntity("http://localhost:"+port+"/tests/save",
+        com.dmnine.geocoder.model.Test.class);
+
+    final com.dmnine.geocoder.model.Test body = response.getBody();
+
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    assertNotNull(body);
+  }
+
+  @Test
+  void integrationTestForLoadNameNotCreated() {
+    ResponseEntity<com.dmnine.geocoder.model.Test> response = testRestTemplate.
+      getForEntity("http://localhost:"+port+"/tests/load/test2",
+        com.dmnine.geocoder.model.Test.class);
+
+    final com.dmnine.geocoder.model.Test body = response.getBody();
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNull(body);
+  }
+
+  @Test
+  void integrationTestForLoadWithoutName() {
+    ResponseEntity<com.dmnine.geocoder.model.Test> response = testRestTemplate.
+      getForEntity("http://localhost:"+port+"/tests/load",
+        com.dmnine.geocoder.model.Test.class);
+
+    final com.dmnine.geocoder.model.Test body = response.getBody();
+
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    assertNotNull(body);
+  }
+
+  @Test
+  void integrationTestForLoadWithTestRepository() {
+    com.dmnine.geocoder.model.Test test = new com.dmnine.geocoder.model.Test();
+    test.setId(1);
+    test.setName("Mario");
+    test.setMark(Mark.A);
+    test.setDone(true);
+    testRepository.save(test);
+
+    ResponseEntity<com.dmnine.geocoder.model.Test> response = testRestTemplate.
+      getForEntity("http://localhost:"+port+"/tests/load/Mario",
+        com.dmnine.geocoder.model.Test.class);
+
+    final com.dmnine.geocoder.model.Test body = response.getBody();
+
+    System.out.println(body);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(1,body.getId());
+    assertEquals("Mario",body.getName());
+    assertEquals(Mark.A,body.getMark());
+    assertEquals(true,body.getDone());
   }
 }

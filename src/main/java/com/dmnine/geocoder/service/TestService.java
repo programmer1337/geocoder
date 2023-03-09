@@ -18,7 +18,7 @@ public class TestService {
     }
 
     public Test build(Integer id, String name, Boolean done){
-        Test test =  new Test();
+        Test test = new Test();
         test.setId(id);
         test.setName(name);
         test.setDone(done);
