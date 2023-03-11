@@ -45,13 +45,13 @@ public class TestController {
     return service.loadData(name);
   }
 
-  @GetMapping(value="/searchPlace", produces = APPLICATION_JSON_VALUE)
-  public NominatimPlace searchPlace() {
-    return nominatimClient.search("кубгу", "json").get(0);
+  @GetMapping(value="/searchPlace/{place}", produces = APPLICATION_JSON_VALUE)
+  public NominatimPlace searchPlace(@PathVariable String place) {
+    return nominatimClient.search(place, "json").get(0);
   }
 
-  @GetMapping(value="/reverse", produces = APPLICATION_JSON_VALUE)
-  public String reverse() {
-    return nominatimClient.reverse("45.019634", "39.031161").getDisplayName();
+  @GetMapping(value="/reverse/{lat}&{lon}", produces = APPLICATION_JSON_VALUE)
+  public NominatimPlace reverse(@PathVariable String lat, @PathVariable String lon) {
+    return nominatimClient.reverse(lat, lon, "json");
   }
 }

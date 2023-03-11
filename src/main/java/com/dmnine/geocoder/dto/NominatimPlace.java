@@ -12,7 +12,7 @@ public class NominatimPlace {
   String type;
   @JsonProperty("lat")
   Double lat;
-  @JsonProperty("lot")
+  @JsonProperty("lon")
   Double lon;
 
   public Double getLat() {

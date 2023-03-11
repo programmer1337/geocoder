@@ -13,9 +13,10 @@ import java.util.List;
 public interface NominatimClient {
   @RequestMapping(method = RequestMethod.GET, value = "/search", consumes = "application/json")
   List<NominatimPlace> search(@RequestParam(value = "q") String query,
-                                   @RequestParam(value = "format") String format);
+                              @RequestParam(value = "format") String format);
 
   @RequestMapping(method = RequestMethod.GET, value = "/reverse", consumes = "application/json")
-  NominatimPlace reverse(@RequestParam(value = "lon") String lon,
-                                   @RequestParam(value = "lat") String lat);
+  NominatimPlace reverse(@RequestParam(value = "lat") String lat,
+                         @RequestParam(value = "lon") String lon,
+                         @RequestParam(value = "format") String format);
 }
