@@ -34,8 +34,8 @@ public class TestService {
         repository.save(test);
     }
 
-    public Test loadData(String name){
-        return repository.findByName(name)
-                .orElse(null);
+    public Test loadData(String name) {
+      return repository.findByName(name)
+        .orElse(null);
     }
 }
