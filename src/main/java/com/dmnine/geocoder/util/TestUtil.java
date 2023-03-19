@@ -1,8 +1,11 @@
 package com.dmnine.geocoder.util;
 
-public class TestUtil {
-
-  public static int sum(int a, int b){
-    return a+b;
+/**
+ * Тестовые методы.
+ */
+@SuppressWarnings("WhitespaceAround")
+public enum TestUtil {;
+  public static int sum(final int a, final int b){
+    return a + b;
   }
 }

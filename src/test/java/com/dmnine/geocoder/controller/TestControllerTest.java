@@ -3,7 +3,6 @@ package com.dmnine.geocoder.controller;
 import com.dmnine.geocoder.dto.RestApiError;
 import com.dmnine.geocoder.model.Mark;
 import com.dmnine.geocoder.repository.TestRepository;
-import com.dmnine.geocoder.util.TestUtil;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +62,7 @@ class TestControllerTest {
 
     assertEquals(1, body.getId());
     assertEquals("test", body.getName());
-    assertEquals(false, body.getDone());
+    assertEquals(false, body.isDone());
     assertEquals(null, body.getMark());
   }
 
@@ -99,9 +98,9 @@ class TestControllerTest {
 
     final RestApiError body = response.getBody();
 
-    assertEquals(400, body.getStatus());
-    assertEquals("Bad Request", body.getError());
-    assertEquals("/tests/abc", body.getPath());
+    assertEquals(400, body.status());
+    assertEquals("Bad Request", body.error());
+    assertEquals("/tests/abc", body.path());
 
     System.out.println(body);
   }
@@ -183,6 +182,6 @@ class TestControllerTest {
     assertEquals(1,body.getId());
     assertEquals("Mario",body.getName());
     assertEquals(Mark.A,body.getMark());
-    assertEquals(true,body.getDone());
+    assertEquals(true,body.isDone());
   }
 }

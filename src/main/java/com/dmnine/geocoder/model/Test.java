@@ -1,8 +1,13 @@
 package com.dmnine.geocoder.model;
 
-
 import javax.persistence.*;
 import java.util.Objects;
+
+/**
+ * Сущноть тест.
+ * Содержит необходимые поля и методы доступа к ним.
+ */
+
 @Entity
 public class Test {
     @Id
@@ -18,7 +23,7 @@ public class Test {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(final Integer id) {
         this.id = id;
     }
 
@@ -26,7 +31,7 @@ public class Test {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -34,23 +39,27 @@ public class Test {
         return mark;
     }
 
-    public void setMark(Mark mark) {
+    public void setMark(final Mark mark) {
         this.mark = mark;
     }
 
-    public boolean getDone() {
+    public boolean isDone() {
         return done;
     }
 
-    public void setDone(boolean done) {
+    public void setDone(final boolean done) {
         this.done = done;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Test test = (Test) o;
+    public boolean equals(final Object o) {
+        if (this == o) {
+          return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+          return false;
+        }
+        final Test test = (Test) o;
         return done == test.done && Objects.equals(id, test.id) && Objects.equals(name, test.name) && mark == test.mark;
     }
 

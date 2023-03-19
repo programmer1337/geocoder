@@ -6,7 +6,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+/**
+ * Тестовый репозиторий.
+ */
 @Repository
 public interface TestRepository extends CrudRepository<Test, Integer> {
-    Optional <Test> findByName(String name);
+    Optional<Test> findByName(String name);
 }
