@@ -39,8 +39,8 @@ public interface NominatimClient {
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/reverse", consumes = "application/json")
-  NominatimPlace reverse(@RequestParam("lat") String lat,
-                         @RequestParam("lon") String lon,
+  NominatimPlace reverse(@RequestParam("lat") Double lat,
+                         @RequestParam("lon") Double lon,
                          @RequestParam("format") String format);
   /**
    * Поиск объекта по его координатам.
@@ -50,7 +50,7 @@ public interface NominatimClient {
    * @param lon долгота
    * @return возвращает найденный объект
    */
-  default Optional<NominatimPlace> reverse(final String lat, final String lon) {
+  default Optional<NominatimPlace> reverse(final Double lat, final Double lon) {
     try {
       return Optional.of(reverse(lat, lon, JSON_FORMAT));
     } catch (Exception ex) {
