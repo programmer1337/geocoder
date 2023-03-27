@@ -14,6 +14,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * Управление запросами к геокодеру.
+ * Работа с сервисами.
  */
 
 @RestController
@@ -26,9 +27,9 @@ public class GeocoderController {
     this.placeService = placeService;
   }
 
-  @GetMapping(value = "/search/{place}", produces = APPLICATION_JSON_VALUE)
-  public ResponseEntity<Place> search(final @PathVariable String place) {
-    return placeService.search(place).map(a -> ResponseEntity.status(HttpStatus.OK).body(a))
+  @GetMapping(value = "/search/{query}", produces = APPLICATION_JSON_VALUE)
+  public ResponseEntity<Place> search(final @PathVariable String query) {
+    return placeService.search(query).map(a -> ResponseEntity.status(HttpStatus.OK).body(a))
       .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
 

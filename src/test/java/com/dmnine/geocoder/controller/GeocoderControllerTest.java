@@ -44,12 +44,13 @@ class GeocoderControllerTest {
 
   @Test
   void searchWhenNominatimNotResponse() {
+    final String query = "kubgu";
     when(placeService.search(anyString()))
       .thenReturn(Optional.empty());
 
     ResponseEntity<NominatimPlace> response = testRestTemplate.
       getForEntity(
-        "http://localhost:"+ port +"/geocoder/search/kubgu", NominatimPlace.class);
+        "http://localhost:"+ port +"/geocoder/search/" + query, NominatimPlace.class);
 
     assertEquals(HttpStatus.NOT_FOUND,response.getStatusCode());
     assertNull(response.getBody());
@@ -59,19 +60,20 @@ class GeocoderControllerTest {
     return new NominatimPlace("Кубгу","university",45.046580, 38.978289);
   }
 
-  private static Place buildTestAddress(){
-    return Place.of(buildTestPlace());
+  private static Place buildTestAddress(final String query){
+    return Place.of(buildTestPlace(), query);
   }
 
   @Test
   void searchWhenNominatimResponse() {
-    final Place testPlace = buildTestAddress();
+    final String query = "kubgu";
+    final Place testPlace = buildTestAddress(query);
     when(placeService.search(anyString()))
-      .thenReturn(Optional.of(buildTestAddress()));
+      .thenReturn(Optional.of(buildTestAddress(query)));
 
     ResponseEntity<Place> response = testRestTemplate.
       getForEntity(
-        "http://localhost:"+ port +"/geocoder/search/kubgu", Place.class);
+        "http://localhost:"+ port +"/geocoder/search/" + query, Place.class);
 
     assertEquals(HttpStatus.OK,response.getStatusCode());
     final Place body = response.getBody();
@@ -94,9 +96,10 @@ class GeocoderControllerTest {
 
   @Test
   void reverseWhenNominatimResponse() {
-    final Place testPlace = buildTestAddress();
+    final String query = "kubgu";
+    final Place testPlace = buildTestAddress(query);
     when(placeService.reverse(anyDouble(), anyDouble()))
-      .thenReturn(Optional.of(buildTestAddress()));
+      .thenReturn(Optional.of(buildTestAddress(query)));
 
     ResponseEntity<Place> response = testRestTemplate.
       getForEntity(

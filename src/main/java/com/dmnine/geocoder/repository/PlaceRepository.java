@@ -13,5 +13,6 @@ import java.util.Optional;
 @Repository
 public interface PlaceRepository extends CrudRepository<Place, Integer> {
   Optional<Place> findByAddress(String place);
+  Optional<Place> findByQuery(String query);
   Optional<Place> findByLatitudeAndLongitude(Double lat, Double lon);
 }

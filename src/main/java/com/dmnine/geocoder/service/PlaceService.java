@@ -28,19 +28,18 @@ public class PlaceService {
     this.placeRepository = placeRepository;
   }
 
-  public Optional<Place> search(final String place) {
-    return placeRepository.findByAddress(place)
+  public Optional<Place> search(final String query) {
+    return placeRepository.findByQuery(query)
       .or(() ->
-        nominatimClient.search(place)
-          .map(p -> placeRepository.save(Place.of(p)))
+        nominatimClient.search(query)
+          .map(p -> placeRepository.save(Place.of(p, query)))
       );
   }
 
   public Optional<Place> reverse(final Double lat, final Double lon) {
     return placeRepository.findByLatitudeAndLongitude(lat, lon)
-      .or(() ->
-        nominatimClient.reverse(lat, lon)
-          .map(p -> placeRepository.save(Place.of(p)))
+      .or(() -> nominatimClient.reverse(lat, lon)
+          .map(p -> placeRepository.save(Place.like(p, "", lat, lon)))
       );
   }
 }

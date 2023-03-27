@@ -22,6 +22,15 @@ public class Place {
   private String address;
   private Double latitude;
   private Double longitude;
+  private String query;
+
+  public String getQuery() {
+    return query;
+  }
+
+  public void setQuery(final String query) {
+    this.query = query;
+  }
 
   public Integer getId() {
     return id;
@@ -64,13 +73,16 @@ public class Place {
       return false;
     }
     final Place place = (Place) o;
-    return Objects.equals(id, place.id) && Objects.equals(address, place.address)
-      && Objects.equals(latitude, place.latitude) && Objects.equals(longitude, place.longitude);
+    return Objects.equals(id, place.id) &&
+      Objects.equals(address, place.address) &&
+      Objects.equals(latitude, place.latitude) &&
+      Objects.equals(longitude, place.longitude) &&
+      Objects.equals(query, place.query);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, address, latitude, longitude);
+    return Objects.hash(id, address, latitude, longitude, query);
   }
 
   @Override
@@ -80,14 +92,26 @@ public class Place {
       ", address='" + address + '\'' +
       ", latitude=" + latitude +
       ", longitude=" + longitude +
+      ", query=" + query +
       '}';
   }
 
-  public static Place of(final NominatimPlace place) {
+  public static Place of(final NominatimPlace place, final String query) {
     final Place result = new Place();
     result.setAddress(place.displayName());
     result.setLatitude(place.lat());
     result.setLongitude(place.lon());
+    result.setQuery(query);
+
+    return result;
+  }
+
+  public static Place like(final NominatimPlace place, final String query, final Double lat, final Double lon) {
+    final Place result = new Place();
+    result.setAddress(place.displayName());
+    result.setLatitude(lat);
+    result.setLongitude(lon);
+    result.setQuery(query);
 
     return result;
   }
