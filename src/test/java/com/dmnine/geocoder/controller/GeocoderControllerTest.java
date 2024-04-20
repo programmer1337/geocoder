@@ -87,7 +87,7 @@ class GeocoderControllerTest {
 
     ResponseEntity<Place> response = testRestTemplate.
       getForEntity(
-        "http://localhost:"+ port +"/geocoder/reverse/45.046580&38.978289",
+        "http://localhost:"+ port +"/geocoder/reverse?lat=45.046580&lon=38.978289",
         Place.class);
 
     assertEquals(HttpStatus.NOT_FOUND,response.getStatusCode());
@@ -103,7 +103,7 @@ class GeocoderControllerTest {
 
     ResponseEntity<Place> response = testRestTemplate.
       getForEntity(
-        "http://localhost:"+port+"/geocoder/reverse/45.02036085&39.03099994504268",
+        "http://localhost:"+port+"/geocoder/reverse?lat=45.02036085&lon=39.03099994504268",
         Place.class);
 
     System.out.println(response);
