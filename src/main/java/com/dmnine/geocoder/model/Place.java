@@ -15,7 +15,6 @@ import java.util.Objects;
 
 @Entity
 public class Place {
-
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;

@@ -42,4 +42,11 @@ public class PlaceService {
           .map(p -> placeRepository.save(Place.like(p, "", lat, lon)))
       );
   }
+
+/*  public Optional<Place> reverse(final Double lat, final Double lon) {
+    return placeRepository.findByQuery(lat+"&"+lon)
+      .or(() -> nominatimClient.reverse(lat, lon)
+        .map(p -> placeRepository.save(Place.of(p, lat+"&"+lon)))
+      );
+  }*/
 }

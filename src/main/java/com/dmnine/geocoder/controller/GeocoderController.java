@@ -5,10 +5,7 @@ import com.dmnine.geocoder.service.PlaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -20,8 +17,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping("geocoder")
 public class GeocoderController {
-
   private final PlaceService placeService;
+
   @Autowired
   public GeocoderController(final PlaceService placeService) {
     this.placeService = placeService;
@@ -33,8 +30,8 @@ public class GeocoderController {
       .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
 
-  @GetMapping(value = "/reverse/{lat}&{lon}", produces = APPLICATION_JSON_VALUE)
-  public ResponseEntity<Place> reverse(final @PathVariable Double lat, final @PathVariable Double lon) {
+  @GetMapping(value = "/reverse", produces = APPLICATION_JSON_VALUE)
+  public ResponseEntity<Place> reverse(final @RequestParam Double lat, final @RequestParam Double lon) {
     return placeService.reverse(lat, lon).map(p -> ResponseEntity.status(HttpStatus.OK).body(p))
       .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
