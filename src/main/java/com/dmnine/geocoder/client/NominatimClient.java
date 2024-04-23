@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.util.Optional;
 
+/** FeignClient. */
 @FeignClient(name = "nominatim", url = "https://nominatim.openstreetmap.org")
 public interface NominatimClient {
   String JSON_FORMAT = "json";

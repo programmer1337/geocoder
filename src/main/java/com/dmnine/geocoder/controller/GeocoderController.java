@@ -35,4 +35,9 @@ public class GeocoderController {
     return placeService.reverse(lat, lon).map(p -> ResponseEntity.status(HttpStatus.OK).body(p))
       .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
   }
+
+  @GetMapping(value = "/health", produces = APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> checkHealth() {
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
 }
