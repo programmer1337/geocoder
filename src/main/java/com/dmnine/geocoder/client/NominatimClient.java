@@ -1,5 +1,6 @@
 /**
  * Copyright 2023
+ * @author programmer1337
  */
 
 package com.dmnine.geocoder.client;
@@ -13,9 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * @author programmer1337
- */
+/** FeignClient. */
 @FeignClient(name = "nominatim", url = "https://nominatim.openstreetmap.org")
 public interface NominatimClient {
   String JSON_FORMAT = "json";
