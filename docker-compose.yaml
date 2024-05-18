@@ -7,12 +7,53 @@ volumes:
   pg_data:
 
 services:
-  application:
+  reverse-proxy:
+    # The official v2 Traefik docker image
+    image: traefik:v2.11
+    # Enables the web UI and tells Traefik to listen to docker
+    command: --providers.docker --entrypoints.http.address=:80 --entrypoints.secure.address=:443 --certificatesResolvers.letsencrypt.acme.httpChallenge.entryPoint=http --traefik.certificatesResolvers.letsencrypt.acme.storage=acme.json --certificatesResolvers.letsencrypt.acme.email=your-email@example.com
+    # --api.insecure=true --providers.docker.exposedbydefault=false
+    ports:
+      # The HTTP port
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+      - "443:443"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - overlay
+
+  search-coder:
     image: geocoder:0.0.1
-    container_name: geocoder
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.search-coder.entrypoints=secure"
+      - "traefik.http.routers.search-coder.tls=true"
+      - "traefik.http.routers.search-coder.certresolver=letsencrypt"
+      - "traefik.http.routers.search-coder.rule=Host(`example.com`) && PathPrefix(`/geocoder/search`)"
+      - "traefik.http.services.search-coder.loadbalancer.healthCheck.path=/geocoder/health"
+    container_name: search
     restart: unless-stopped
     ports:
-      - '80:8080'
+      - '80'
+    networks:
+      - overlay
+
+  reverse-coder:
+    image: geocoder:0.0.1
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.reverse-coder.entrypoints=secure"
+      - "traefik.http.routers.reverse-coder.tls=true"
+      - "traefik.http.routers.reverse-coder.certresolver=letsencrypt"
+      - "traefik.http.routers.reverse-coder.rule=Host(`example.com`) && PathPrefix(`/geocoder/reverse`)"
+      - "traefik.http.services.reverse-coder.loadbalancer.healthCheck.path=/geocoder/health"
+    container_name: reverse
+    restart: unless-stopped
+    ports:
+      - '80'
     networks:
       - overlay
 
@@ -25,7 +66,7 @@ services:
       - POSTGRES_USER=geocoder
       - POSTGRES_PASSWORD=geocoderpass
     ports:
-      - '5432:5432'
+      - '5432'
     networks:
       - overlay
     volumes:
@@ -35,10 +76,18 @@ services:
     image: dpage/pgadmin4:latest
     container_name: pgadmin
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pgadmin.entrypoints=secure"
+      - "traefik.http.routers.pgadmin.rule=Host(`pgadmin.localhost`)"
+      - "traefik.http.middlewares.admin-auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/,test2:$$apr1$$d9hr9HBB$$4HxwgUir3HP4EsggP/QNo0"
+      - "traefik.http.middlewares.test-retry.retry.attempts=1"
+      - "traefik.http.middlewares.test-retry.retry.initialinterval=10s"
+      - "traefik.http.routers.pgadmin.middlewares=test-retry@docker"
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
       - PGADMIN_DEFAULT_PASSWORD=admin
     ports:
-      - '15432:80'
+      - '80'
     networks:
       - overlay
