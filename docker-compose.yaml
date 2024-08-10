@@ -1,5 +1,3 @@
-version: '3'
-
 networks:
   overlay:
 
@@ -8,17 +6,16 @@ volumes:
 
 services:
   reverse-proxy:
-    # The official v2 Traefik docker image
-    image: traefik:v2.11
+    # The official v3.1 Traefik docker image
+    image: traefik:v3.1
     # Enables the web UI and tells Traefik to listen to docker
-    command: --providers.docker --entrypoints.http.address=:80 --entrypoints.secure.address=:443 --certificatesResolvers.letsencrypt.acme.httpChallenge.entryPoint=http --traefik.certificatesResolvers.letsencrypt.acme.storage=acme.json --certificatesResolvers.letsencrypt.acme.email=your-email@example.com
+    command: --api.insecure=true --providers.docker
     # --api.insecure=true --providers.docker.exposedbydefault=false
     ports:
       # The HTTP port
       - "80:80"
       # The Web UI (enabled by --api.insecure=true)
       - "8080:8080"
-      - "443:443"
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
@@ -26,15 +23,12 @@ services:
       - overlay
 
   search-coder:
-    image: geocoder:0.0.1
+    image: geocoder:latest
+    container_name: search
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.search-coder.entrypoints=secure"
-      - "traefik.http.routers.search-coder.tls=true"
-      - "traefik.http.routers.search-coder.certresolver=letsencrypt"
-      - "traefik.http.routers.search-coder.rule=Host(`example.com`) && PathPrefix(`/geocoder/search`)"
-      - "traefik.http.services.search-coder.loadbalancer.healthCheck.path=/geocoder/health"
-    container_name: search
+      - "traefik.http.routers.search.rule=Host(`geocoder.localhost`) && PathPrefix(`/geocoder/search`)"
+      - "traefik.http.services.search.loadbalancer.healthCheck.path=/geocoder/health"
     restart: unless-stopped
     ports:
       - '80'
@@ -42,15 +36,12 @@ services:
       - overlay
 
   reverse-coder:
-    image: geocoder:0.0.1
+    image: geocoder:latest
+    container_name: reverse-coder
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.reverse-coder.entrypoints=secure"
-      - "traefik.http.routers.reverse-coder.tls=true"
-      - "traefik.http.routers.reverse-coder.certresolver=letsencrypt"
-      - "traefik.http.routers.reverse-coder.rule=Host(`example.com`) && PathPrefix(`/geocoder/reverse`)"
+      - "traefik.http.routers.reverse-coder.rule=Host(`geocoder.localhost`) && PathPrefix(`/geocoder/reverse`)"
       - "traefik.http.services.reverse-coder.loadbalancer.healthCheck.path=/geocoder/health"
-    container_name: reverse
     restart: unless-stopped
     ports:
       - '80'
@@ -78,12 +69,11 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.pgadmin.entrypoints=secure"
-      - "traefik.http.routers.pgadmin.rule=Host(`pgadmin.localhost`)"
-      - "traefik.http.middlewares.admin-auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/,test2:$$apr1$$d9hr9HBB$$4HxwgUir3HP4EsggP/QNo0"
-      - "traefik.http.middlewares.test-retry.retry.attempts=1"
-      - "traefik.http.middlewares.test-retry.retry.initialinterval=10s"
-      - "traefik.http.routers.pgadmin.middlewares=test-retry@docker"
+      - "traefik.http.middlewares.pgadmin-auth.basicauth.users=test:$$2a$$12$$i8Rve/qU804Tn/vZwA12m.iivIJL.9Xtzj/ecMOJVtpCNlt35q7Va/"
+      - "traefik.http.middlewares.test-retry.retry.attempts=3"
+      #      - "traefik.http.middlewares.test-retry.retry.initialinterval=10s"
+      - "traefik.http.routers.pgadmin.rule=Host(`pgadmin.docker.localhost`)"
+      - "traefik.http.routers.pgadmin.middlewares=test-retry@docker,pgadmin-auth@docker"
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
       - PGADMIN_DEFAULT_PASSWORD=admin
